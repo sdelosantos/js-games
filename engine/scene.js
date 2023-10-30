@@ -44,12 +44,14 @@ export class GameScene extends SceneEventHandle {
     get DEFAULT_BOARD_COLOR() { return '#ffef45'; }
     get DEFAULT_SCENE_BG() { return '#000' }
 
+    /** @type {{[k:string]: GameObjectType}} */
+    #gameObjectPool;
+    /** @type {number} */
+    #blockSize;
     /** @type {GameSceneOptions} */
     options;
     /** @type {Array<Array<number | string>>} */
-    #_boardArray;
-    /** @type {number} */
-    #_blockSize;
+    boardArray;
     /** @type {number} */
     boardWidth;
     /** @type {number} */
@@ -58,8 +60,6 @@ export class GameScene extends SceneEventHandle {
     canvasWidth;
     /** @type {number} */
     canvasHeight;
-    /** @type {{[k:string]: GameObjectType}} */
-    #_hasTableGamesObject;
     /** @type {CanvasRenderingContext2D | null}} */
     canvasContext = null;
 
@@ -69,9 +69,9 @@ export class GameScene extends SceneEventHandle {
     constructor(options) {
         super();
         this.options = options;
-        this.#_boardArray = [];
-        this.#_hasTableGamesObject = {};
-        this.#_blockSize = 20;
+        this.boardArray = [];
+        this.#gameObjectPool = {};
+        this.#blockSize = 20;
 
         this.setBoardSize(options.width, options.height);
     }
@@ -81,89 +81,73 @@ export class GameScene extends SceneEventHandle {
      * @returns {GameScene}
      */
     setBoardBlockSize(blockSize) {
-        this.#_blockSize = blockSize;
+        this.#blockSize = blockSize;
         return this;
     }
 
     /**  @returns {Array<Array<number | string>>} */
     getBoardArray() {
-        return this.#_boardArray;
+        return this.boardArray;
     }
 
     /**
-     * @param {number} width 
-     * @param {number} height 
+     * Define canvas element size and board array size
+     * @param {number} width - set width size in block units
+     * @param {number} height - set height size in block units
      * @returns {GameScene}
      */
     setBoardSize(width, height) {
         this.boardWidth = width;
         this.boardHeight = height;
-        this.canvasWidth = width * this.#_blockSize;
-        this.canvasHeight = height * this.#_blockSize;
-        this.#_boardArray = [];
-        for (let y = 0; y < height; y++) {
-            const xArray = [];
-            for (let x = 0; x < width; x++) {
-                xArray.push(0);
-            }
-            this.#_boardArray.push(xArray)
-        }
+        this.canvasWidth = width * this.#blockSize;
+        this.canvasHeight = height * this.#blockSize;
 
+        this.boardArray = new Array(height).fill(new Array(width));
         return this;
     }
 
     /**
+     * Register a Game Object inside the scene
      * @param {GameObjectType} gameObject 
      * @returns {GameScene}
      */
     addGameObject(gameObject) {
         gameObject.$injectScene(this);
         if (gameObject.name)
-            this.#_hasTableGamesObject[gameObject.name] = gameObject;
+            this.#gameObjectPool[gameObject.name] = gameObject;
         else
             throw 'much be set a name to the game object'
         return this;
     }
 
     /**
-     * @param {string} name 
-     * @returns {GameScene}
+     * Remove a Game object of the scene
+     * @param {string} name - game object key name
+     * @returns {GameScene} - game object instance
      */
     removeGameObject(name) {
-        delete this.#_hasTableGamesObject[name];
+        delete this.#gameObjectPool[name];
         return this;
     }
 
     /**
+     * Get a game object by name
      * @param {string} name 
      * @returns {GameObjectType}
      */
     getGameObject(name) {
-        return this.#_hasTableGamesObject[name];
+        return this.#gameObjectPool[name];
     }
 
     /**
+     * Get all registered game objects
      * @returns {GameObjectType[]}
      */
     getAllGameObject() {
-        return Object.entries(this.#_hasTableGamesObject).map(([, gameObject]) => gameObject);
+        return Object.entries(this.#gameObjectPool).map(([, gameObject]) => gameObject);
     }
-
     /**
-     * @param {GameObjectType} gameObject 
-     * @returns {GameScene}
-     */
-    getSolidifyGameObject(gameObject) {
-        gameObject.getPoligoneShape().forEach(({ x, y, value }, inx) => {
-            if (value) {
-                const yPosition = y >= this.boardHeight ? this.boardHeight - 1 : y;
-                this.#_boardArray[yPosition][x] = 1
-            }
-        });
-        return this;
-    }
-
-    /**
+     * Create the canvas context based on the setting provided
      * @param {HTMLCanvasElement} canvas 
      * @returns {GameScene}
      */
@@ -172,14 +156,18 @@ export class GameScene extends SceneEventHandle {
         return this;
     }
 
+    /**
+     * Draw on  the canvas the scene with all game objects registered
+     */
     render() {
-        this.#resetCanvas()
+        this.#cleanCanvas()
             .#drawSceneBoard()
             .#drawGameObjects();
     }
 
     /**
-     * @param {HTMLCanvasElement} canvas 
+     * Build and return the scene's canvas context
+     * @param {HTMLCanvasElement} canvas - canvas elements to get the context
      * @returns {CanvasRenderingContext2D | null}
      */
     #getContent(canvas) {
@@ -190,13 +178,17 @@ export class GameScene extends SceneEventHandle {
         if (context) {
             context.fillStyle = this.options.bgColor || this.DEFAULT_SCENE_BG;
             context?.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-            context.scale(this.#_blockSize, this.#_blockSize);
+            context.scale(this.#blockSize, this.#blockSize);
         }
 
         return context;
     }
 
-    #resetCanvas() {
+    /**
+     * Clean all rendered elements on the canvas
+     * @returns {GameScene}
+     */
+    #cleanCanvas() {
         const context = this.canvasContext;
         if (context) {
             context.fillStyle = this.options.bgColor || this.DEFAULT_SCENE_BG;
@@ -205,12 +197,17 @@ export class GameScene extends SceneEventHandle {
 
         return this;
     }
-    /** @returns {GameScene} */
+
+
+    /**
+     * Draw the registered game object on the canvas
+     * @returns {GameScene}
+     */
     #drawGameObjects() {
         if (this.canvasContext !== null) {
             const context = this.canvasContext;
-            Object.keys(this.#_hasTableGamesObject).forEach((gameObjectName) => {
-                const gameObject = this.#_hasTableGamesObject[gameObjectName];
+            Object.keys(this.#gameObjectPool).forEach((gameObjectName) => {
+                const gameObject = this.#gameObjectPool[gameObjectName];
                 const shape = gameObject.getPoligoneShape();
 
                 shape.forEach(({ x, y, value }) => {
@@ -236,10 +233,13 @@ export class GameScene extends SceneEventHandle {
         return this;
     }
 
-    /**  @returns {GameScene} */
+    /**
+     * Draw the board on the canvas
+     * @returns {GameScene}
+     */
     #drawSceneBoard() {
         const context = this.canvasContext;
-        this.#_boardArray.forEach((row, y) => {
+        this.boardArray.forEach((row, y) => {
             row.forEach((valueRgb, x) => {
                 if (valueRgb) {
                     const blockColor = typeof valueRgb === 'string'

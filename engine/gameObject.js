@@ -22,10 +22,6 @@ export class GameObjectElement {
     /** @type {boolean} */
     #_visible = true
     /** @type {GameObjectShapeType} */
-    #_initShape = [];
-    /** @type {GameObjectPosition} */
-    #_initPosition;
-    /** @type {GameObjectShapeType} */
     #_currentShape = [];
     /** @type {GameObjectPosition | undefined} */
     #_currentPosition = undefined;
@@ -45,8 +41,6 @@ export class GameObjectElement {
         this.name = name;
         this.#_currentShape = [...initGameObject.shape];
         this.#_currentPosition = { ...initGameObject.position };
-        this.#_initShape = [...initGameObject.shape];
-        this.#_initPosition = { ...initGameObject.position };
         if (initGameObject.isVisible !== undefined)
             this.#_visible = initGameObject.isVisible;
     }

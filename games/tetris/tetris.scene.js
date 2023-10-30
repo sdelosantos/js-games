@@ -1,6 +1,7 @@
 // @ts-check
 /**
  * @typedef {TetrisScene} TetrisSceneType
+ * @typedef {import('../../engine/gameObject').GameObjectElementType} GameObject
  */
 
 import { GameScene } from "../../engine/scene";
@@ -15,14 +16,34 @@ const options = {
 
 class TetrisScene extends GameScene {
     totalScore = 0;
-    #scorePointForBlocks = 200;
+    #pointsPerBlocks = 200;
 
+    /**
+     * Fix a tetris piece on the scene board to keep it
+     * @param {GameObject} gameObject 
+     * @returns {GameScene}
+     */
+    solidifyGameObjectToBoard(gameObject) {
+        gameObject.getPoligoneShape().forEach(({ x, y, value }) => {
+            if (value) {
+                const yPosition = y >= this.boardHeight ? this.boardHeight - 1 : y;
+                this.boardArray[yPosition][x] = 1
+            }
+        });
+        return this;
+    }
+
+
+    /**
+     * Remove the row if all the space has been filled, to collect the score points
+     * @returns {GameScene}
+     */
     removeCompletedRows() {
         const board = this.getBoardArray();
         for (let y = 0; y < board.length; y++) {
             const row = board[y];
             if (row.every(val => val)) {
-                const calcPoints = row.length * this.#scorePointForBlocks;
+                const calcPoints = row.length * this.#pointsPerBlocks;
                 this.totalScore += calcPoints;
                 this.emit('customEvent', { event: 'ScoreUpdated', data: { totalScore: this.totalScore } })
                 board.splice(y, 1);

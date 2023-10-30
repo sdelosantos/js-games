@@ -29,7 +29,7 @@ const startGame = currentScene => currentScene.startup((scene) => {
 
     scene.on('onObjectCollision', (collision) => {
         if (collision.side.includes('BOTTOM')) {
-            scene.getSolidifyGameObject(player).removeCompletedRows();
+            scene.solidifyGameObjectToBoard(player).removeCompletedRows();
             player.reset();
         }
     });
@@ -59,11 +59,11 @@ const startGame = currentScene => currentScene.startup((scene) => {
 
 export default {
     blank: () => {
-        const scene = engine.selectScene('BLANK_SCREEN');
+        const scene = engine.getScene('BLANK_SCREEN');
         scene.startup(() => { });
     },
     start: () => {
-        const scene = engine.selectScene('TETRIS_GAME');
+        const scene = engine.getScene('TETRIS_GAME');
         startGame(scene);
     }
 }
