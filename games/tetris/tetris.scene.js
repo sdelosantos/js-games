@@ -5,8 +5,8 @@
  */
 
 import { GameScene } from "../../engine/scene";
-import { getTetriPiece } from "./tetris.player";
-import { BOAD_HEIGHT, BOAD_WIDTH } from "./tetris.utils";
+import tetriPiece  from "./tetris.player";
+import { BLOCK_SIZE, BOAD_HEIGHT, BOAD_WIDTH } from "./tetris.utils";
 const options = {
     width: BOAD_WIDTH,
     height: BOAD_HEIGHT,
@@ -27,7 +27,7 @@ class TetrisScene extends GameScene {
         gameObject.getPoligoneShape().forEach(({ x, y, value }) => {
             if (value) {
                 const yPosition = y >= this.boardHeight ? this.boardHeight - 1 : y;
-                this.boardArray[yPosition][x] = 1
+                this.boardArray[yPosition][x] = value;
             }
         });
         return this;
@@ -55,8 +55,8 @@ class TetrisScene extends GameScene {
 }
 
 export const TetrisGameScene = new TetrisScene(options)
-    .setBoardBlockSize(20)
-    .addGameObject(getTetriPiece())
+    .setBoardBlockSize(BLOCK_SIZE)
+    .addGameObject(tetriPiece)
 
 export const BankScreen = new TetrisScene({ ...options, disableRunner: true })
     .setBoardBlockSize(20)

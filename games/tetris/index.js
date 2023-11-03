@@ -12,28 +12,21 @@ const engine = Engine.init('#app')
     .addScene('BLANK_SCREEN', BankScreen);
 
 /**
- * @param {{startup:(callback: (scene: GameScene)=>void)=>void}} currentScene } currentScene 
+ * Start Game
+ * @param {{startup:(callback: (scene: GameScene)=>void)=>void}} currentScene } 
  */
 const startGame = currentScene => currentScene.startup((scene) => {
     /** @type {TetrisGameObject} */
     const player = scene.getGameObject(PLAYER_GAME_OBJECT_NAME);
 
-    scene.on('onUpdateScene', () => player.dropPiece(5))
-    scene.on('customEvent', ({ event, data }) => {
-        if (event === 'ScoreUpdated') {
-            const { totalScore } = data;
-            const scoreSpan = document.querySelector('.score-counter .counter');
-            scoreSpan.textContent = totalScore;
-        }
-    })
-
-    scene.on('onObjectCollision', (collision) => {
-        if (collision.side.includes('BOTTOM')) {
-            scene.solidifyGameObjectToBoard(player).removeCompletedRows();
-            player.reset();
-        }
-    });
-
+    const updateScore = ({totalScore})=>{
+        const scoreSpan = document.querySelector('.score-counter .counter');
+        scoreSpan.textContent = totalScore;
+    }
+    const solidifyItem = ()=>{
+        scene.solidifyGameObjectToBoard(player).removeCompletedRows();
+        player.reset();
+    }
 
     document.addEventListener('keydown', (e) => {
         if (player) {
@@ -54,16 +47,26 @@ const startGame = currentScene => currentScene.startup((scene) => {
         }
     });
 
+    scene.on('onUpdateScene', () => player.dropPiece(10))
+    scene.on('customEvent', ({ event, data }) => {
+        if (event === 'ScoreUpdated') 
+            updateScore(data)
+    })
+    scene.on('onObjectCollision', (collision) => {
+        if (collision.side.includes('BOTTOM')) 
+            solidifyItem()
+    });
+
 })
 
 
 export default {
     blank: () => {
-        const scene = engine.getScene('BLANK_SCREEN');
+        const scene = engine.scene('BLANK_SCREEN');
         scene.startup(() => { });
     },
     start: () => {
-        const scene = engine.getScene('TETRIS_GAME');
+        const scene = engine.scene('TETRIS_GAME');
         startGame(scene);
     }
 }

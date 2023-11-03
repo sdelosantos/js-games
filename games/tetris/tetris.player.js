@@ -10,8 +10,8 @@ class TetrisGameObject extends GameObjectElement {
     #_START_DATE = new Date();
 
     /**
+     * Move the piece
      * @param {Direction} direction 
-     * @param {number} unitMove 
     */
     movePiece(direction, unitMove = 1) {
         const position = this.getPosition();
@@ -19,7 +19,7 @@ class TetrisGameObject extends GameObjectElement {
         if (position && this.IS_VISIBLE) {
             switch (direction) {
                 case 'right':
-                    const right = position.x + unitMove;
+                    const right = position.x + unitMove;  
                     if (!hasCollision('RIGHT')) {
                         this.setPosition({ ...position, x: right })
                     }
@@ -36,13 +36,14 @@ class TetrisGameObject extends GameObjectElement {
                     const bottom = position.y + unitMove;
                     if (!hasCollision('BOTTOM'))
                         this.setPosition({ ...position, y: bottom })
-                    break
+                                        break
             }
         }
     }
-
     reset() {
-        getTetriPiece()
+        this.setPosition(getPosition());
+        this.setShape(getShape());
+        return this;
     }
 
     /**
@@ -55,7 +56,7 @@ class TetrisGameObject extends GameObjectElement {
         const rateUpdate = diff / 1000;
 
         if (rateUpdate >= (1 / dropSpeed)) {
-            this.movePiece('bottom', 1);
+            this.movePiece('bottom');
             this.#_START_DATE = new Date();
         }
     }
@@ -83,9 +84,4 @@ class TetrisGameObject extends GameObjectElement {
     }
 }
 
-const player = new TetrisGameObject(PLAYER_GAME_OBJECT_NAME, initPlayerSetting())
-export const getTetriPiece = function () {
-    player.setPosition(getPosition());
-    player.setShape(getShape());
-    return player;
-}
+export default new TetrisGameObject(PLAYER_GAME_OBJECT_NAME, initPlayerSetting());

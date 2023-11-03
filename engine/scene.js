@@ -2,6 +2,7 @@
 
 /**
  * @typedef {import('./gameObject').GameObjectElementType} GameObjectType
+ * @typedef {import('./gameObject').GameObjectPosition} GameObjectPosition
  * @typedef {'onUpdateScene'| 'onRenderScene' | 'customEvent' | 'onObjectCollision'} EventType
  * @typedef GameSceneOptions
  * @property {number} width - define screen widht on points unit
@@ -17,6 +18,7 @@ class SceneEventHandle {
         this.#_eventCallbackPool = {};
     }
     /**
+     * Add event listener
      * @param {EventType} event 
      * @param {(data:any)=>void} callback 
      */
@@ -28,6 +30,7 @@ class SceneEventHandle {
     }
 
     /**
+     * Dispatch a custome events
     * @param {EventType} event 
     * @param {any} data 
     */
@@ -204,11 +207,10 @@ export class GameScene extends SceneEventHandle {
      * @returns {GameScene}
      */
     #drawGameObjects() {
-        if (this.canvasContext !== null) {
+        if (this.canvasContext) {
             const context = this.canvasContext;
-            Object.keys(this.#gameObjectPool).forEach((gameObjectName) => {
-                const gameObject = this.#gameObjectPool[gameObjectName];
-                const shape = gameObject.getPoligoneShape();
+            Object.entries(this.#gameObjectPool).forEach(([, gameObject]) => {
+                const shape = gameObject.checkBoardColision().getPoligoneShape();
 
                 shape.forEach(({ x, y, value }) => {
                     const blockColor = typeof value === 'string'
@@ -220,11 +222,6 @@ export class GameScene extends SceneEventHandle {
                                 context.fillStyle = blockColor;
                                 context.fillRect(x, y, 1, 1);
                             }
-                        }
-                    } else {
-                        if (context) {
-                            context.fillStyle = this.options.bgColor || this.DEFAULT_SCENE_BG;
-                            context?.fillRect(x, y, 1, 1);
                         }
                     }
                 })

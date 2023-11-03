@@ -51,7 +51,6 @@ export class GameObjectElement {
      */
     setPosition(position) {
         this.#_currentPosition = position;
-        this.#checkBoardColision();
         return this;
     }
 
@@ -110,7 +109,7 @@ export class GameObjectElement {
         return newShape;
     }
 
-    #checkBoardColision() {
+    checkBoardColision() {
         const scene = this.#_sceneInstance;
         const position = this.getPosition();
         if (scene && position) {

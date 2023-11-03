@@ -1,9 +1,16 @@
+const colors = {
+    y: 'yellow',
+    r: 'red',
+    g: 'green',
+    b: 'blue'
+}
+
 // tetris piece
-const piece1 = [[1, 1], [1, 1]];
-const piece2 = [[0, 1, 0], [1, 1, 1]];
-const piece3 = [[1, 0, 0], [1, 1, 1]];
-const piece4 = [[1, 1, 1]];
-const piece5 = [[1], [1], [1]];
+const piece1 = [[colors.y, colors.y], [colors.y, colors.y]];
+const piece2 = [[0, colors.g, 0], [colors.g, colors.g, colors.g]];
+const piece3 = [[colors.b, 0, 0], [colors.b, colors.b, colors.b]];
+const piece4 = [[colors.r, colors.r, colors.r]];
+const piece5 = [[colors.r], [colors.r], [colors.r]];
 
 export const BLOCK_SIZE = 20;
 export const BOAD_WIDTH = 15;
