@@ -40,3 +40,85 @@ div.header {
   color: white;
   font-family: monospace;
 }
+
+div.start-screen {
+  display: flex;
+  background-color: #050505;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  text-align: center;
+  font-family: monospace;
+}
+div.start-screen .logo {
+  width: 200px;
+}
+div.start-screen .logo img{
+  width: 100%;
+}
+div.button{
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: monospace;
+  border-radius: 13px;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25%;
+  cursor: pointer;
+  background-color: #ee8225;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+div.button:hover{
+  background-color: #c86b1a;
+}
+
+.tetris-game-scene {
+  display: grid;
+  grid-template-columns: auto 200px;
+  width: fit-content;
+  height: auto;
+  min-height: 600px;
+  background: #2f2f2f;
+  border: 3px solid #1c1c1c;
+  border-radius: 10px;
+  overflow: auto;
+}
+
+#tetris-game-canvas{
+  width: fit-content;
+  background: black;
+  padding: 0px 5px;
+  box-sizing: border-box;
+}
+#tetris-stadistics{
+  padding: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* background: #171717; */
+  background: #e2e2e2;
+}
+#tetris-stadistics .stadistic{
+  font-family: monospace;
+  font-size: 22px;
+  padding: 5px 10px;
+  font-weight: 700;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  background: #000;
+  justify-content: space-between;
+}
+#tetris-stadistics .logo{
+  padding: 20px;
+}

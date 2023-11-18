@@ -9,14 +9,52 @@
 </head>
 
 <body>
-  <div id="app">
-    <div class="header">
-      <div class="score-counter">
-        <label>Score: </label>
-        <span class="counter">0</span>
+  <div id="app"></div>
+</div>
+<!-- GAMES TEMPLATES -->
+<template id="tetris-game">
+  <div class="tetris-game-scene">
+    <section id="tetris-game-canvas"></section>
+    <section id="tetris-stadistics">
+      <div class="logo">
+        <img src="./tetris_logo.svg" alt="" srcset="">
+      </div>
+        <div class="stadistic">
+          <label class="metric">Level:</label>
+          <label id="level" class="value">0</label>
+        </div>
+        <div class="stadistic">
+          <label class="metric">Score:</label>
+          <label id="score" class="value">0</label>
+        </div>
+    </section>
+  </div>
+</template>
+  <template id="tetris-start-screen">
+    <div class="start-screen">
+      <div class="content">
+        <div class="logo">
+          <img src="./tetris_logo.svg" alt="" srcset="">
+        </div>
+        <div class="bottom-screen">
+          <div class="button" id="btn-start" role="button"> Start</div>
+        </div>
       </div>
     </div>
-  </div>
+  </template>
+  <template id="tetris-gameover-screen">
+    <div class="start-screen">
+      <div class="content">
+        <div class="logo">
+          <img src="./tetris_logo.svg" alt="" srcset="">
+        </div>
+        <h1>Game Over</h1>
+        <div class="bottom-screen">
+          <div class="button" id="btn-game-over" role="button"> Restart</div>
+        </div>
+      </div>
+    </div>
+  </template>
   <script type="module" src="/game.js"></script>
 </body>
 

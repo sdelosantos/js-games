@@ -1,5 +1,7 @@
-import './style.css'
+import "./style.css";
+import TetrisLauncher from "./games/tetris/tetris.launcher";
 
-import Tetris from './games/tetris'
-
-Tetris.start();
+const LIST_GAMES = {
+  TETRIS: TetrisLauncher,
+};
+LIST_GAMES.TETRIS.launchGame();

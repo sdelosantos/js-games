@@ -1,78 +1,64 @@
-/**
- * @typedef {import('./tetris.player').TetrisGameObjectType} TetrisGameObject
- */
-
-import Engine from "../../engine/engine";
 import { CollisionTypes, Directions } from "../../engine/engine.utils";
-import { GameScene } from "../../engine/scene";
-import { BankScreen, TetrisGameScene } from "./tetris.scene";
 import { MoveDirection, PLAYER_GAME_OBJECT_NAME } from "./tetris.utils";
 
-const engine = Engine.init("#app")
-  .addScene("TETRIS_GAME", TetrisGameScene)
-  .addScene("BLANK_SCREEN", BankScreen);
+export default function TetrisGame(scene) {
+  const player = scene.getGameObject(PLAYER_GAME_OBJECT_NAME);
+  const levelSpan = document.querySelector("#level");
+  const scoreSpan = document.querySelector("#score");
 
-/**
- * Start Game
- * @param {{startup:(callback: (scene: GameScene)=>void)=>void}} currentScene }
- */
-const startGame = (currentScene) =>
-  currentScene.startup((scene) => {
-    /** @type {TetrisGameObject} */
-    const player = scene.getGameObject(PLAYER_GAME_OBJECT_NAME);
+  let currentLevel = 1;
+  let pieceDropSpeed = 3;
 
-    const updateScore = ({ totalScore }) => {
-      const scoreSpan = document.querySelector(".score-counter .counter");
-      scoreSpan.textContent = totalScore;
-    };
-    const solidifyItem = () => {
-      scene.solidifyGameObjectToBoard(player).removeCompletedRows();
-      player.reset();
-    };
+  const nextLevelUp = () => {
+    currentLevel += 1;
+    pieceDropSpeed += 1;
+    levelSpan.textContent = currentLevel;
+  };
 
-    document.addEventListener("keydown", (e) => {
-      if (player) {
-        switch (e.key) {
-          case MoveDirection.UP:
-            player.rotate();
-            break;
-          case MoveDirection.DOWN:
-            player.movePiece("bottom");
-            break;
-          case MoveDirection.RIGHT:
-            player.movePiece("right");
-            break;
-          case MoveDirection.LEFT:
-            player.movePiece("left");
-            break;
-        }
+  const updateScore = ({ totalScore }) => {
+    scoreSpan.textContent = totalScore;
+    if (scene.canLevelUp()) {
+      nextLevelUp();
+    }
+  };
+
+  const solidifyItem = () => {
+    scene.solidifyPiece(player).checkGameOver().collectRowsCompleted();
+    player.reset();
+  };
+
+  const movePiece = function (key) {
+    if (player) {
+      switch (key) {
+        case MoveDirection.UP:
+          player.rotate();
+          break;
+        case MoveDirection.DOWN:
+          player.movePiece("bottom");
+          break;
+        case MoveDirection.RIGHT:
+          player.movePiece("right");
+          break;
+        case MoveDirection.LEFT:
+          player.movePiece("left");
+          break;
       }
-    });
+    }
+  };
 
-    scene.on("onUpdateScene", () => player.dropPiece(3));
-    scene.on("customEvent", ({ event, data }) => {
-      if (event === "ScoreUpdated") updateScore(data);
-    });
-    scene.on("onObjectCollision", (collisiones) => {
-      console.log("collisiones", collisiones);
-      if (
-        collisiones.some(
-          (col) =>
-            (col.side && col.side.includes(Directions.BOTTOM)) ||
-            col.collisionType == CollisionTypes.ALLOCATED_BOARD_SPACE
-        )
+  scene.on("updatescene", () => player.dropPiece(pieceDropSpeed));
+  scene.on("scoreupdated", updateScore);
+  scene.on("collisiondetected", (collisiones) => {
+    if (
+      collisiones.some(
+        (col) =>
+          (col.side && col.side.includes(Directions.BOTTOM)) ||
+          col.collisionType == CollisionTypes.ALLOCATED_BOARD_SPACE
       )
-        solidifyItem();
-    });
+    )
+      solidifyItem();
   });
 
-export default {
-  blank: () => {
-    const scene = engine.scene("BLANK_SCREEN");
-    scene.startup(() => {});
-  },
-  start: () => {
-    const scene = engine.scene("TETRIS_GAME");
-    startGame(scene);
-  },
-};
+  document.addEventListener("keydown", (e) => movePiece(e.key));
+  levelSpan.textContent = currentLevel;
+}
