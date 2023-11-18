@@ -12,7 +12,7 @@ import {
  * @typedef {Array<Array<string | number>>} GameObjectShapeType
  *
  * @typedef CollisionType
- * @property {'BOARD_LIMIT' | 'SOLIDIFIED_STUFFED' | 'GAME_OBJECT'} type
+ * @property {'GAME_OBJECT' | 'BOUNDARY_COLLISION' | 'ALLOCATED_BOARD_SPACE'} type
  * @property {Array<'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'>} side
  * @property {Array<GameObjectPosition>} coordinates
  * @property {GameObjectElementType | null} gameObject
@@ -141,7 +141,7 @@ export class GameObjectElement {
       ]).then(([col, col2]) => {
         const collisiones = [...col, ...col2];
         collisiones.length > 0 &&
-          this.#_sceneInstance?.emit("onObjectCollision", collisiones);
+          this.#_sceneInstance?.emit("collisiondetected", collisiones);
         callback(collisiones);
       });
     }

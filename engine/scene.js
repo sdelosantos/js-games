@@ -3,7 +3,7 @@
 /**
  * @typedef {import('./gameObject').GameObjectElementType} GameObjectType
  * @typedef {import('./gameObject').GameObjectPosition} GameObjectPosition
- * @typedef {'onUpdateScene'| 'onRenderScene' | 'customEvent' | 'onObjectCollision'} EventType
+ * @typedef {'updatescene'| 'renderScene' | 'scoreupdated' | 'collisiondetected' | 'gameover'} EventType
  * @typedef GameSceneOptions
  * @property {number} width - define screen widht on points unit
  * @property {number} height - define screen height on points unit
@@ -44,6 +44,8 @@ class SceneEventHandle {
   }
 }
 export class GameScene extends SceneEventHandle {
+  gameOver = false;
+
   get DEFAULT_BOARD_COLOR() {
     return "#ffef45";
   }
@@ -109,7 +111,10 @@ export class GameScene extends SceneEventHandle {
     this.canvasWidth = width * this.#blockSize;
     this.canvasHeight = height * this.#blockSize;
 
-    this.boardArray = new Array(height).fill(new Array(width));
+    for (let y = 0; y < height; y++) {
+      this.boardArray[y] = [];
+      for (let x = 0; x < width; x++) this.boardArray[y][x] = 0;
+    }
     return this;
   }
 
@@ -163,11 +168,16 @@ export class GameScene extends SceneEventHandle {
     return this;
   }
 
+  update() {
+    return this;
+  }
   /**
    * Draw on  the canvas the scene with all game objects registered
    */
-  render() {
-    this.#cleanCanvas().#drawSceneBoard().#drawGameObjects();
+  draw() {
+    if (!this.gameOver) {
+      this.#cleanCanvas().#drawSceneBoard().#drawGameObjects().update();
+    }
   }
 
   /**

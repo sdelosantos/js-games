@@ -65,7 +65,6 @@ class TetrisGameObject extends GameObjectElement {
     this.setShape(getShape());
     return this;
   }
-
   /**
    * @param {number} dropSpeed
    */
