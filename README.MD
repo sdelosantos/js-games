@@ -1,10 +1,10 @@
 ## JS Game
 
-The project include a playable tetris game, created using Javascript and canvas drawing to render the differentes graphic elements.
+The project includes a playable Tetris game created using JavaScript and canvas drawing to render various graphic elements.
 
 ## Clone the project
 
-Create a new folder and clone the repository
+Create a new folder and clone the repository:
 
 ```mkdir js-game
 cd js-game
@@ -13,7 +13,7 @@ git clone <Repo URL>
 
 ## Install Dependencies
 
-Install de vite dependencies
+Install Vite dependencies:
 
 ```
 pnpm install
@@ -30,3 +30,4 @@ npm start
 ```
 
 ### Capture
+<img width="400" alt="Screenshot 2023-11-18 at 9 52 49 PM" src="https://github.com/sdelosantos/js-games/assets/19800467/9a4fd4e7-95b4-4b14-ae7a-91e958c38275">
